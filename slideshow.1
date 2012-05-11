@@ -1,0 +1,69 @@
+.\" Title: slideshow
+.\" Author: Philip Ullrich
+.\" Generator: Geany
+.\" Date: 11.05.2012
+.\" Manual: Desktop (Gnome 3)
+.\" Language: German
+.TH "SLIDESHOW" "8" "11.05.2012" "Philip Ullrich" "Desktop"
+.SH "NAME"
+slideshow \- erstellt eine XML\-Slideshow aus den eingegebenen Bildern fuer Gnome 3
+.SH "\(:UBERSICHT"
+.HP \w'\fBslideshow\fR\ 'u
+\fBslideshow\fR [\fIOptionen\fR] \fIDATEIEN und ORDNER\fR
+.HP \w'\fBslideshow\fR\ 'u
+\fBslideshow\fR \-s \fIDATEIEN und ORDNER\fR
+.HP \w'\fBslideshow\fR\ 'u
+\fBslideshow\fR \-s [\fIOptionen\fR] \fIDATEIEN und ORDNER\fR
+.SH "BESCHREIBUNG"
+.PP 
+Wenn man \fBslideshow\fR mit der Option \fB\-s\fR und den jeweiligen Bildern aufruft, wird die Datei $HOME/slideshow.xml erstellt in der die angegebenen Bilder mit einer Wechselzeit von 300 Sekunden aufgeführt sind.
+.PP 
+.SH "OPTIONEN"
+.PP 
+Die Optionen, die vom Befehl
+\fBslideshow\fR
+unterst\(:utzt werden, sind:
+.PP 
+\fB\-s\fR, \fB\-\-set\-background\fR
+.RS 4
+Setzt mithilfe von \fBgsettings\fR die erzeugte XML\-Slideshow als Hintergrund fuer Gnome3. Wenn mit der Option \fB\-f\fR kein Pfad fuer die XML\-Datei angegeben wurde, wird $HOME/slideshow.xml erstellt.
+.RE
+.PP 
+\fB\-f\fR, \fB\-\-file\fR\fIXML\-DATEIPFAD\fR
+.RS 4
+Schreibt die Slideshow in eine XML\-Datei am angegebenen Ort.
+.RE
+.PP 
+\fB\-t\fR, \fB\-\-time\fR\fISECONDS\fR
+.RS 4
+Setzt die Zeit die ein Bild bis zum naechsten Bildwechsel erhalten bleibt.
+.RE
+.PP 
+\fB\-v\fR, \fB\-\-verbose\fR
+.RS 4
+Zeigt den erzeugten XML\-Baum auf der STDOUT. \fBslideshow \-v ./Bilder/ > ~/slide.xml\fR hat den selben effekt wie \fBslideshow \-f ~/slide.xml ./Bilder/\fR
+.RE
+.PP 
+.SH "WARNUNGEN"
+.PP 
+Wenn man keine Bilder angibt ergibt slideshow keinen sinn und macht nichts.
+.PP 
+.SH "DATEIEN"
+.PP 
+/usr/bin/gsettings
+.RS 4
+Gnome Konfigurations\-Tool
+.RE
+.PP 
+.SH "R\(:UCKGABEWERTE"
+.PP 
+Der Befehl
+\fBslideshow\fR
+gibt beim Beenden folgende Werte zur\(:uck:
+.PP 
+\fI0\fR
+.RS 4
+Erfolg
+.RE
+.PP 
+\fI1\fR
