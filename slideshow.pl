@@ -3,7 +3,10 @@
 use v5.14;
 use Getopt::Long;
 
-##### Argumente deklarieren #####
+
+#################################
+##### Argumente deklaration #####
+#################################
 
 # slideshow.pl [-options --options] File1/Dir1 ... File_n/Dir_n
 # -v, --verbose                 =>  schreibt XML auf STDOUT
@@ -14,7 +17,13 @@ use Getopt::Long;
 #                                   wird $HOME/slideshow.xml erstellt
 
 
-my (@dateien, $duration, $verbose, $file, $slideshow, $set_background);
+my (@dateien, 
+    $duration, 
+    $verbose, 
+    $file, 
+    $slideshow, 
+    $set_background,
+    $std_xml);
 
 Getopt::Long::Configure('bundling');
 GetOptions( 'time:i'            => \$duration,
@@ -27,8 +36,10 @@ GetOptions( 'time:i'            => \$duration,
             's'                 => \$set_background
             ) or die ('Fehler bei den Parameter');
             
+            
 ## $duration standard           : 300 sekunden
 ## xml standard speicherort     : $HOME/slideshow.xml
+
 $duration       or $duration = 300;
 $std_xml        = "$ENV{HOME}/slideshow.xml";
 @dateien        = extractFiles(@ARGV);
@@ -51,17 +62,24 @@ else
 
 $set_background and setBackground($file);
 
+
+##################################
 ##### Funktionen Deklaration #####
+##################################
+
 
 ## setBackground($file) setzt die eingegebene Datei
 ## als Hintergrund fuer Gnome 3 ueber gsettings
+
 sub setBackground
 {
     my $file = shift @_;
     `gsettings set org.gnome.desktop.background picture-uri "file://$file"`;
 }
 
+
 ## createXMLFile($slidehsow, $file) schreibt die Slideshow in eine Datei
+
 sub createXMLFile
 {
     my ($slideshow, $file) = @_;
@@ -73,8 +91,10 @@ sub createXMLFile
     return 1;
 }
 
+
 ## extractFiles(@pfade, $dateien) gibt alle Dateien aus den 
 ## angegebenen Pfaden(Dateien und Ordner) in eine Liste
+
 sub extractFiles
 {
     my @pfade = shift @_ ;
@@ -89,7 +109,9 @@ sub extractFiles
     return @dateien;
 }
 
+
 ## createSlideshow(@BildListe, $DurationTime)
+
 sub createSlideshow
 {
     my $xml;
@@ -105,7 +127,9 @@ sub createSlideshow
     return $xml;
 }
 
+
 ## createSlideshowHeader() erstellt den Header der Slideshow XML
+
 sub createSlideshowHeader
 {
     my ($xml);
@@ -125,9 +149,11 @@ sub createSlideshowHeader
     return $xml;
 }
 
+
 ## createSlideshowBody(@BildListe, $DurationTime) erstellt den
 ## Slideshow Body für jedes in der @BildListe vorhandenes Bild
 ## Bilder werden nach MIMITYP : image erkannt
+
 sub createSlideshowBody
 {
     my $typ;
@@ -144,9 +170,11 @@ sub createSlideshowBody
     return $xml;
 }
 
+
 ## createSlideshowElement($Picture, $DurationTime) erstellt ein
 ## Slideshow Body-Element fuer ein gegebenes Bild mit der angegebenen
 ## Bild-Wechsel-Zeit ($DurationTime)
+
 sub createSlideshowElement
 {
     my $xml;
