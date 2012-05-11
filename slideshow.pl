@@ -3,11 +3,15 @@
 use v5.14;
 use Getopt::Long;
 
-# slideshow.pl [-options --options] pic_1 ... pic_n
-# -v, --verbose                 => show XML on STDOUT
-# -t, --time (seconds)          => time to next change
-# -f, --file (path/xml-file)    => create xml on path/xml-file
-# -s, --set-background          => set $file as background (gnome 3)
+##### Argumente deklarieren #####
+
+# slideshow.pl [-options --options] File1/Dir1 ... File_n/Dir_n
+# -v, --verbose                 =>  schreibt XML auf STDOUT
+# -t, --time (seconds)          =>  Zeit bis zum naechsten Bildwechsel
+# -f, --file (path/xml-file)    =>  erstellt die XML am angegebenen Ort
+# -s, --set-background          =>  setzt die XML als Hintergrund-Bild
+#                                   wenn kein XML-Pfad angegeben ist 
+#                                   wird $HOME/slideshow.xml erstellt
 
 
 my (@dateien, $duration, $verbose, $file, $slideshow, $set_background);
@@ -23,8 +27,10 @@ GetOptions( 'time:i'            => \$duration,
             's'                 => \$set_background
             ) or die ('Fehler bei den Parameter');
             
-
+## $duration standard           : 300 sekunden
+## xml standard speicherort     : $HOME/slideshow.xml
 $duration       or $duration = 300;
+$std_xml        = "$ENV{HOME}/slideshow.xml";
 @dateien        = extractFiles(@ARGV);
 $slideshow      = createSlideshow(@dateien, $duration);
 $verbose        and say $slideshow;
@@ -32,21 +38,30 @@ $verbose        and say $slideshow;
 if($file)
 { 
     createXMLFile($slideshow, $file); 
-}else
+}
+else
 {
-    $file = "$ENV{HOME}/slideshow.xml";
+    ## wenn keine Pfadangabe fuer die XML gemacht wurde
+    ## wird $std_xml gesetzt falls der -s/--set-background 
+    ## flag gesetzt ist.
+    
+    $file = $std_xml;
     createXMLFile($slideshow, $file) if $set_background;
 }
 
 $set_background and setBackground($file);
 
+##### Funktionen Deklaration #####
 
+## setBackground($file) setzt die eingegebene Datei
+## als Hintergrund fuer Gnome 3 ueber gsettings
 sub setBackground
 {
     my $file = shift @_;
     `gsettings set org.gnome.desktop.background picture-uri "file://$file"`;
 }
 
+## createXMLFile($slidehsow, $file) schreibt die Slideshow in eine Datei
 sub createXMLFile
 {
     my ($slideshow, $file) = @_;
@@ -58,6 +73,8 @@ sub createXMLFile
     return 1;
 }
 
+## extractFiles(@pfade, $dateien) gibt alle Dateien aus den 
+## angegebenen Pfaden(Dateien und Ordner) in eine Liste
 sub extractFiles
 {
     my @pfade = shift @_ ;
@@ -72,18 +89,14 @@ sub extractFiles
     return @dateien;
 }
 
-sub createXMLHeader
-{
-    return "<?xml version='1.0' ?>\n";
-}
-
+## createSlideshow(@BildListe, $DurationTime)
 sub createSlideshow
 {
     my $xml;
     my $duration    = pop @_ ;
     my @pictures    = @_ ;
     
-    $xml  = createXMLHeader();
+    $xml  = "<?xml version='1.0' ?>\n";
     $xml .= "<background>\n";
     $xml .= createSlideshowHeader();
     $xml .= createSlideshowBody(@pictures, $duration);
@@ -92,6 +105,7 @@ sub createSlideshow
     return $xml;
 }
 
+## createSlideshowHeader() erstellt den Header der Slideshow XML
 sub createSlideshowHeader
 {
     my ($xml);
@@ -111,6 +125,9 @@ sub createSlideshowHeader
     return $xml;
 }
 
+## createSlideshowBody(@BildListe, $DurationTime) erstellt den
+## Slideshow Body für jedes in der @BildListe vorhandenes Bild
+## Bilder werden nach MIMITYP : image erkannt
 sub createSlideshowBody
 {
     my $typ;
@@ -127,6 +144,9 @@ sub createSlideshowBody
     return $xml;
 }
 
+## createSlideshowElement($Picture, $DurationTime) erstellt ein
+## Slideshow Body-Element fuer ein gegebenes Bild mit der angegebenen
+## Bild-Wechsel-Zeit ($DurationTime)
 sub createSlideshowElement
 {
     my $xml;
