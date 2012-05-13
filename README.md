@@ -1,7 +1,7 @@
 gnome3-slideshow-perl
 =====================
 
-Autor   : Philip Ullrich / wiesel78
+Autor   : Philip Ullrich / wiesel78 <br>
 E-Mail  : wurst78@googlemail.com
 Lizenz  : LGPL 3.0
 
