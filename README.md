@@ -1,9 +1,10 @@
-gnome3-slideshow-perl
+wiesel-slideshow
 =====================
 
 Autor   : Philip Ullrich / wiesel78 <br>
 E-Mail  : wurst78@googlemail.com <br>
 Lizenz  : LGPL 3.0
+ProgLang: Perl
 
 Beschreibung 
   
