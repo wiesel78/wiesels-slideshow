@@ -9,11 +9,11 @@
 slideshow \- erstellt eine XML\-Slideshow aus den eingegebenen Bildern fuer Gnome 3
 .SH "\(:UBERSICHT"
 .HP \w'\fBslideshow\fR\ 'u
-\fBslideshow\fR [\fIOptionen\fR] \fIDATEIEN und ORDNER\fR
+\fBslideshow\fR [\fIOptionen\fR] \fIPFADE[:NUMBER]\fR
 .HP \w'\fBslideshow\fR\ 'u
-\fBslideshow\fR \-s \fIDATEIEN und ORDNER\fR
+\fBslideshow\fR \-s \fIPFADE[:NUMBER]\fR
 .HP \w'\fBslideshow\fR\ 'u
-\fBslideshow\fR \-s [\fIOptionen\fR] \fIDATEIEN und ORDNER\fR
+\fBslideshow\fR \-s [\fIOptionen\fR] \fIPFADE[:NUMBER]\fR
 .SH "BESCHREIBUNG"
 .PP 
 Wenn man \fBslideshow\fR mit der Option \fB\-s\fR und den jeweiligen Bildern aufruft, wird die Datei $HOME/slideshow.xml erstellt in der die angegebenen Bilder mit einer Wechselzeit von 300 Sekunden aufgeführt sind.
@@ -36,7 +36,7 @@ Schreibt die Slideshow in eine XML\-Datei am angegebenen Ort.
 .PP 
 \fB\-t\fR, \fB\-\-time\fR\fISECONDS\fR
 .RS 4
-Setzt die Zeit die ein Bild bis zum naechsten Bildwechsel erhalten bleibt.
+Setzt die Zeit die ein Bild bis zum naechsten Bildwechsel erhalten bleibt. Man kann auch hinter jeder Pfadangabe :Sekunden anhaengen wobei Sekunden fuer die Anzahl der Sekunden steht ( z.B. ~/Bilder/bild.jpg:200 ) 
 .RE
 .PP 
 \fB\-v\fR, \fB\-\-verbose\fR

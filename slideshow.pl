@@ -10,7 +10,10 @@ use Getopt::Long;
 
 # slideshow.pl [-options --options] File1/Dir1 ... File_n/Dir_n
 # -v, --verbose                 =>  schreibt XML auf STDOUT
-# -t, --time (seconds)          =>  Zeit bis zum naechsten Bildwechsel
+# -t, --time (seconds)          =>  Zeit bis zum naechsten Bildwechsel.
+#                                   Alternativ kann auch :200 an die
+#                                   Bildpfade angehängt werden wobei 
+#                                   200 fuer die Anzahl der sek steht
 # -f, --file (path/xml-file)    =>  erstellt die XML am angegebenen Ort
 # -s, --set-background          =>  setzt die XML als Hintergrund-Bild
 #                                   wenn kein XML-Pfad angegeben ist 
@@ -42,8 +45,8 @@ GetOptions( 'time:i'            => \$duration,
 
 $duration       or $duration = 300;
 $std_xml        = "$ENV{HOME}/slideshow.xml";
-@dateien        = extractFiles(@ARGV);
-$slideshow      = createSlideshow(@dateien, $duration);
+@dateien        = extractFiles(@ARGV, $duration);
+$slideshow      = createSlideshow(@dateien);
 $verbose        and say $slideshow;
 
 if($file)
@@ -97,31 +100,86 @@ sub createXMLFile
 
 sub extractFiles
 {
-    my @pfade = shift @_ ;
-    my @dateien;
+    my $duration    = pop @_ ;
+    my @pfade       = @_ ;
+    my @pictures;
+    my $temp; 
     
     foreach (@pfade)
     {
-        push (@dateien, glob "$_/*") if (-d $_); 
-        push (@dateien, $_)          if (-f $_);
+        /(.*):(\d*)/;
+        push (@pictures, getPicturesOfPath($1, $2)) if $2;
+        push (@pictures, getPicturesOfPath($_, $duration)) unless $2;
     }
     
-    return @dateien;
+    return @pictures;
 }
 
 
-## createSlideshow(@BildListe, $DurationTime)
+## getPicturesOfPath($pfad, $duration) gibt alle Bilder am $pfad in Form
+## Hashes in einem Array aus
+
+sub getPicturesOfPath
+{
+    my ( $pfad, $duration ) = @_ ;
+    my @pictures;
+    
+    if (-d $pfad)
+    {
+        for (glob "$pfad/*")
+        {
+            push (@pictures, getPictureHash($_, $duration));
+        }
+    }
+    
+    if (-f $pfad)
+    {
+        push (@pictures, getPictureHash($pfad, $duration));
+    }
+    
+    return @pictures;
+}
+
+
+## getPictureHash($pfad, $duration) wirft ein hash der form
+## (picture => $pfad, duration => $duration) aus
+
+sub getPictureHash
+{
+    my ( $pfad, $duration ) = @_ ;
+    my %picture ;
+    
+    if (isPicture($pfad))
+    {
+        %picture = ( picture => $pfad , duration => $duration );
+        return \%picture;
+    }
+}
+
+
+## isPicture($pfad) testet ob $pfad ein Bild ist
+
+sub isPicture
+{
+    my $file = shift @_ ;
+    
+    $_ = `file --mime-type "$file"`;
+    if ( /:\s(image)\/.*/ ) { return 1; }
+    else                    { return 0; }
+}
+
+
+## createSlideshow(@BildListe)
 
 sub createSlideshow
 {
-    my $xml;
-    my $duration    = pop @_ ;
     my @pictures    = @_ ;
+    my $xml;
     
     $xml  = "<?xml version='1.0' ?>\n";
     $xml .= "<background>\n";
     $xml .= createSlideshowHeader();
-    $xml .= createSlideshowBody(@pictures, $duration);
+    $xml .= createSlideshowBody(@pictures);
     $xml .= "</background>";
     
     return $xml;
@@ -132,7 +190,7 @@ sub createSlideshow
 
 sub createSlideshowHeader
 {
-    my ($xml);
+    my $xml = "";
     my ($sekunden, $minuten, $stunden, $tag, $monat, $jahr) = localtime;
     $monat++;
     $jahr += 1900;
@@ -158,13 +216,11 @@ sub createSlideshowBody
 {
     my $typ;
     my $xml         = "";
-    my $duration    = pop @_ ;
     my @pictures    = @_ ;
     
-    foreach my $file (@pictures)
+    foreach (@pictures)
     {
-        $_ = `file --mime-type "$file"`;
-        $xml .= createSlideshowElement($file, $duration) if /:\s(image)\/.*/;
+        $xml .= createSlideshowElement(${$_}{picture}, ${$_}{duration});
     }
     
     return $xml;
@@ -177,7 +233,7 @@ sub createSlideshowBody
 
 sub createSlideshowElement
 {
-    my $xml;
+    my $xml         = "";
     my $picture     = shift @_ ;
     my $duration    = shift @_ ; 
     
