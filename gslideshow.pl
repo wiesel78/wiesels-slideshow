@@ -44,7 +44,7 @@ GetOptions( 'time:i'            => \$duration,
 ## xml standard speicherort     : $HOME/slideshow.xml
 
 $duration       or $duration = 300;
-$std_xml        = "$ENV{HOME}/slideshow.xml";
+$std_xml        = "$ENV{HOME}/.slideshow.xml";
 @dateien        = extractFiles(@ARGV, $duration);
 $slideshow      = createSlideshow(@dateien);
 $verbose        and say $slideshow;
