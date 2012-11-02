@@ -1,6 +1,6 @@
 #!/usr/bin/perl -w
 
-use v5.14;
+use v5.16;
 use Getopt::Long;
 
 
@@ -123,18 +123,21 @@ sub getPicturesOfPath
 {
     my ( $pfad, $duration ) = @_ ;
     my @pictures;
+    my %pichash;
     
     if (-d $pfad)
     {
         for (glob "$pfad/*")
         {
-            push (@pictures, getPictureHash($_, $duration));
+			push (@pictures, getPictureHash($_, $duration)) if isPicture($_);
         }
     }
     
     if (-f $pfad)
     {
-        push (@pictures, getPictureHash($pfad, $duration));
+		if (getPictureHash($_, $duration)){
+			push (@pictures, getPictureHash($pfad, $duration));
+		}
     }
     
     return @pictures;
@@ -149,11 +152,8 @@ sub getPictureHash
     my ( $pfad, $duration ) = @_ ;
     my %picture ;
     
-    if (isPicture($pfad))
-    {
-        %picture = ( picture => $pfad , duration => $duration );
-        return \%picture;
-    }
+    %picture = ( picture => $pfad , duration => $duration );
+    return \%picture;
 }
 
 
@@ -163,9 +163,12 @@ sub isPicture
 {
     my $file = shift @_ ;
     
-    $_ = `file --mime-type "$file"`;
-    if ( /:\s(image)\/.*/ ) { return 1; }
-    else                    { return 0; }
+    my $_ = `file --mime-type "$file"`;
+    if ( /:\s(image)\/.*/ ) { 
+		return 1; 
+	}else{ 
+		return 0; 
+	}
 }
 
 
@@ -217,6 +220,7 @@ sub createSlideshowBody
     my $typ;
     my $xml         = "";
     my @pictures    = @_ ;
+    
     
     foreach (@pictures)
     {
